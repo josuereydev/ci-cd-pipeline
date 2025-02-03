@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'jenkins-agent' }
+    agent { label 'jenkins-agente' }
 
     tools {
         jdk 'Temurin JDK 17'  // Asegúrate de que coincida con el nombre en Global Tool Configuration
