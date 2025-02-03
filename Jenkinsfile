@@ -33,10 +33,12 @@ pipeline {
 
         stage("Build Application") {
             steps {
-                // Este paso asegura que el entorno de JAVA_HOME se pasa correctamente a Maven
-                withEnv(["JAVA_HOME=${JAVA_HOME}", "PATH=${JAVA_HOME}/bin:${env.PATH}"]) {
-                    sh "mvn clean package"
-                }
+                // Configuración explícita del entorno para Maven
+                sh """
+                    export JAVA_HOME=${JAVA_HOME}
+                    export PATH=\$JAVA_HOME/bin:\$PATH
+                    mvn clean package
+                """
             }
         }
     }
