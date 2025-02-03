@@ -2,13 +2,13 @@ pipeline {
     agent { label 'jenkins-agent' }
 
     tools {
-        jdk 'Java17'  // Asegúrate de que 'Java17' está correctamente configurado en Global Tool Configuration
+        jdk 'Temurin JDK 17'  // Asegúrate de que coincida con el nombre en Global Tool Configuration
         maven 'Maven3'
     }
 
     environment {
-        JAVA_HOME = '/usr/lib/jvm/temurin-17-jdk-amd64'  // Ruta correcta dentro del contenedor
-        PATH = "${JAVA_HOME}/bin:${env.PATH}"  // Añade Java al PATH
+        JAVA_HOME = '/usr/lib/jvm/temurin-17-jdk-amd64'
+        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
@@ -27,7 +27,7 @@ pipeline {
         stage("Verify Java Version") {
             steps {
                 sh "echo 'Using JAVA_HOME=${JAVA_HOME}'"
-                sh "java -version"  // Verifica que Jenkins usa Java 17
+                sh "java -version"
             }
         }
 
