@@ -1,14 +1,9 @@
 pipeline {
     agent { label 'jenkins-agente' }
-
+    
     tools {
-        jdk 'Temurin JDK 17'  // Asegúrate de que coincida con el nombre en Global Tool Configuration
+        jdk 'Java17'
         maven 'Maven3'
-    }
-
-    environment {
-        JAVA_HOME = '/usr/lib/jvm/temurin-17-jdk-amd64'
-        PATH = "${JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
@@ -24,31 +19,8 @@ pipeline {
             }
         }
 
-        stage("Verify Java Version") {
-            steps {
-                sh "echo 'Using JAVA_HOME=${JAVA_HOME}'"
-                sh "java -version"
-            }
-        }
-
         stage("Build Application") {
             steps {
-                // Configuración explícita del entorno para Maven
-                sh """
-                    export JAVA_HOME=${JAVA_HOME}
-                    export PATH=\$JAVA_HOME/bin:\$PATH
-                    mvn clean package
-                """
+                sh "mvn clean package"
             }
         }
-    }
-
-    post {
-        success {
-            echo "✅ Build completado con éxito"
-        }
-        failure {
-            echo "❌ Hubo un error en la ejecución del pipeline"
-        }
-    }
-}
