@@ -16,21 +16,12 @@ pipeline {
         stage("Checkout from SCM") {
             steps {
                 git branch: 'main', credentialsId: 'github', url: 'https://github.com/josuereydev/ci-cd-pipeline.git'
-                sh "ls -la"  // Verificar si el código se clonó correctamente
             }
         }
 
         stage("Build Application") {
             steps {
-                sh """
-                if [ -f pom.xml ]; then
-                    mvn clean package
-                elif [ -d app ] && [ -f app/pom.xml ]; then
-                    cd app && mvn clean package
-                else
-                    echo "No se encontró el pom.xml en el directorio esperado" && exit 1
-                fi
-                """
+                sh "mvn clean package"
             }
         }
 
@@ -39,16 +30,7 @@ pipeline {
                 sh "mvn test"
             }
         }
-    }
-
-    post {
-        failure {
-            echo "El build ha fallado. Revisa los logs."
-        }
-        success {
-            echo "Build exitoso 🎉"
-        }
-    }
-}
+    } 
+} 
 
 
