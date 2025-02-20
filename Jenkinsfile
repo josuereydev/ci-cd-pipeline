@@ -57,15 +57,20 @@ pipeline {
         }
 // Crear un stage para crear y empujar la imagen de docker
         stage("Build & Push Docker Image") {
-            steps {
-                script {
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image = docker.build("${IMAGE_NAME}")
-                    }
+    steps {
+        script {
+            // Verificar si el Dockerfile existe antes de construir la imagen
+            if (!fileExists('Dockerfile')) {
+                error "Dockerfile no encontrado en el directorio actual."
+            }
 
-                    docker.withRegistry('',DOCKER_PASS) {
-                        docker_image.push("${IMAGE_TAG}")
-                        docker_image.push('latest')
+            // Construir la imagen Docker
+            docker_image = docker.build("${IMAGE_NAME}")
+
+            // Iniciar sesión en Docker Hub y hacer el push
+            docker.withRegistry('', DOCKER_PASS) {
+                docker_image.push("${IMAGE_TAG}")
+                docker_image.push('latest')
                 
                     }
                 }
