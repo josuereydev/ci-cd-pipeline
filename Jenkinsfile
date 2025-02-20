@@ -57,15 +57,13 @@ pipeline {
         }
 // Crear un stage para crear y empujar la imagen de docker
         stages {
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    // Aseguramos que el código fuente y el Dockerfile están en el repositorio
-                    // Si el Dockerfile está en un subdirectorio, actualiza la ruta a 'path/to/Dockerfile'
-                    // En este caso asumimos que Dockerfile está en el directorio raíz del repositorio
+                    // Verifica que estés en el directorio correcto y que el Dockerfile esté presente
                     dir("${WORKSPACE}") {
-                        // Construcción de la imagen Docker
-                        docker_image = docker.build("${IMAGE_NAME}", "-f Dockerfile .")
+                        // Construir la imagen Docker
+                        docker_image = docker.build("${IMAGE_NAME}")
                     }
                 }
             }
@@ -73,9 +71,8 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Iniciar sesión en DockerHub
                     docker.withRegistry('', DOCKER_PASS) {
-                        // Etiquetar y subir la imagen construida
+                        // Subir la imagen al Docker Hub
                         docker_image.push("${IMAGE_TAG}")
                         docker_image.push('latest')
                 
