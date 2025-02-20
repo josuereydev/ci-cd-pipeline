@@ -56,7 +56,7 @@ pipeline {
                 }
             }
         }
-// Crear un stage para empujar la creacion de la imagen de docker
+// Crear un stage para crear y empujar la imagen de docker
         stage("Build & Push Docker Image") {
     steps {
         script {
