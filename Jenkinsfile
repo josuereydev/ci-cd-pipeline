@@ -56,21 +56,28 @@ pipeline {
             }
         }
 // Crear un stage para crear y empujar la imagen de docker
-        stage("Build & Push Docker Image") {
-    steps {
-        script {
-            // Verificar si el Dockerfile existe antes de construir la imagen
-            if (!fileExists('Dockerfile')) {
-                error "Dockerfile no encontrado en el directorio actual."
+        stages {
+        stage('Build') {
+            steps {
+                script {
+                    // Aseguramos que el código fuente y el Dockerfile están en el repositorio
+                    // Si el Dockerfile está en un subdirectorio, actualiza la ruta a 'path/to/Dockerfile'
+                    // En este caso asumimos que Dockerfile está en el directorio raíz del repositorio
+                    dir("${WORKSPACE}") {
+                        // Construcción de la imagen Docker
+                        docker_image = docker.build("${IMAGE_NAME}", "-f Dockerfile .")
+                    }
+                }
             }
-
-            // Construir la imagen Docker
-            docker_image = docker.build("${IMAGE_NAME}")
-
-            // Iniciar sesión en Docker Hub y hacer el push
-            docker.withRegistry('', DOCKER_PASS) {
-                docker_image.push("${IMAGE_TAG}")
-                docker_image.push('latest')
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    // Iniciar sesión en DockerHub
+                    docker.withRegistry('', DOCKER_PASS) {
+                        // Etiquetar y subir la imagen construida
+                        docker_image.push("${IMAGE_TAG}")
+                        docker_image.push('latest')
                 
                     }
                 }
