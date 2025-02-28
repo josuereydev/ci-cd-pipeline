@@ -32,12 +32,12 @@ pipeline {
         }
 //Sonar Qube Analisis
         stage("SonarQube Analysis"){
-            steps{
-                script{
-                    withSonarQubeEnv(credentialsId: 'jenkins-sonarqube')
-                    sh "mvn sonar:sonar"
-                }
-            }
-        }
-    }
+           steps {
+	           script {
+		        withSonarQubeEnv(credentialsId: 'jenkins-sonarqube') { 
+                        sh "mvn sonar:sonar"
+		        }
+	           }	
+           }
+       }
 }
