@@ -53,5 +53,13 @@ pipeline {
         failure {
             echo 'La ejecución falló. Revisar logs.'
         }
+// Quality Gate
+        stage("Quality Gate") {
+            steps {
+                script {
+                    waitForQualityGate abortPipeline: false, credentialsId: 'jenkins-sonarqube'
+                }
+            }
+        }     
     }
 }
