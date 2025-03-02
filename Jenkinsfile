@@ -19,21 +19,18 @@ pipeline {
             }
         }
 
-        // Construir la aplicación        
         stage("Build Application") {
             steps {
                 sh "mvn clean package"
             }
         }
 
-        // Testear la aplicación       
         stage("Test Application") {
             steps {
                 sh "mvn test"
             }
         }
 
-        // SonarQube Analysis
         stage("SonarQube Analysis") {
             steps {
                 script {
@@ -43,10 +40,8 @@ pipeline {
                 }   
             }
         }
+    }
 
-        // Quality Gate
-
-    // Manejo de errores y limpieza
     post {
         always {
             echo 'Pipeline finalizado.'
