@@ -41,13 +41,3 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            echo 'Pipeline finalizado.'
-        }
-        failure {
-            echo 'La ejecución falló. Revisar logs.'
-        }
-    }
-}
