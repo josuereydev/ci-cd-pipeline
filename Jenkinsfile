@@ -12,7 +12,15 @@ pipeline {
                 cleanWs()
             }
         }
-        
+//Viriables Docker
+        enviroment {
+            APP_NAME = "register-app-pipeline"
+            RELEASE = "1.0.0"
+            DOCKER_USER = "josuereydev"
+            DOCKER_PASS = 'dockerhub'
+            DOCKER_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
+            IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"       
+        }
         stage("Checkout from SCM") {
             steps {
                 git branch: 'main', credentialsId: 'github', url: 'https://github.com/josuereydev/ci-cd-pipeline.git'
