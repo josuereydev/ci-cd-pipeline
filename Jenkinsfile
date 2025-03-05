@@ -6,22 +6,22 @@ pipeline {
         maven 'Maven3'
     }
     
+    environment {
+        APP_NAME = "register-app-pipeline"
+        RELEASE = "1.0.0"
+        DOCKER_USER = "josuereydev"
+        DOCKER_PASS = 'dockerhub'
+        IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
+        IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+    }
+
     stages {
         stage("Cleanup Workspace") {
             steps {
                 cleanWs()
             }
         }
-//Viriables Docker
-        environment {
-            APP_NAME = "register-app-pipeline"
-            RELEASE = "1.0.0"
-            DOCKER_USER = "josuereydev"
-            DOCKER_PASS = 'dockerhub'
-            IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
-            IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
-	              
-        }
+
         stage("Checkout from SCM") {
             steps {
                 git branch: 'main', credentialsId: 'github', url: 'https://github.com/josuereydev/ci-cd-pipeline.git'
@@ -39,7 +39,8 @@ pipeline {
                 sh "mvn test"
             }
         }
-        stage ("SonarQube Analysis"){
+
+        stage ("SonarQube Analysis") {
             steps {
                 script {
                     withSonarQubeEnv(credentialsId: 'tokensonarqube-2') {
@@ -48,25 +49,31 @@ pipeline {
                 }
             }
         }
-        stage("Quality Gate"){
+
+        stage("Quality Gate") {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'tokensonarqube-2'
+                    timeout(time: 5, unit: 'MINUTES') {  // Evita bloqueos largos
+                        def qualityGate = waitForQualityGate()
+                        if (qualityGate.status != 'OK') {
+                            error "Quality Gate failed: ${qualityGate.status}"
+                        }
+                    }
                 }
             }
         }
-//Construir la imagen de Docker
-        stage("Build & Push Docker Image"){
+
+        stage("Build & Push Docker Image") {
             steps {
-                script {docker.withRegistry('',DOCKER_PASS) {
-                    docker_image = docker.build "${IMAGE_NAME}"
-                }
-                docker.withRegistry('',DOCKER_PASS) {
-                   docker_image.push("${IMAGE_TAG}")
-                   docker_image.push('latest')
-                }
+                script {
+                    def docker_image = docker.build("${IMAGE_NAME}:${IMAGE_TAG}") // Se declara antes de usarla
+                    
+                    docker.withRegistry('', 'dockerhub') { // Se usa credentialsId correcto
+                        docker_image.push("${IMAGE_TAG}")
+                        docker_image.push('latest')
+                    }
                 }
             }
         }
     }
-  }
+}
