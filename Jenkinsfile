@@ -13,13 +13,14 @@ pipeline {
             }
         }
 //Viriables Docker
-        enviroment {
+        environment {
             APP_NAME = "register-app-pipeline"
             RELEASE = "1.0.0"
             DOCKER_USER = "josuereydev"
             DOCKER_PASS = 'dockerhub'
-            DOCKER_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
-            IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"       
+            IMAGE_NAME = "${DOCKER_USER}" + "/" + "${APP_NAME}"
+            IMAGE_TAG = "${RELEASE}-${BUILD_NUMBER}"
+	              
         }
         stage("Checkout from SCM") {
             steps {
